@@ -1,5 +1,15 @@
 # https://docs.marimo.io/guides/publishing/github_pages/#publish-using-github-actions
 
+name: Write HTML
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+
 jobs:
     build:
         runs-on: ubuntu-latest
