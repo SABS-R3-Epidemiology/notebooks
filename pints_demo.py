@@ -98,7 +98,8 @@ def _(mo):
 def _(mo):
     mcmc_algo = mo.ui.dropdown(['Haario Bardenet ACMC', 'Population MCMC'], value='Haario Bardenet ACMC', label='Choose the MCMC method:')
     num_iterations = mo.ui.number(2, 1000, label='Choose the number of iterations (Maximum of 1000): ', value=250)
-    return mcmc_algo, num_iterations
+    button = mo.ui.run_button(label='Run MCMC')
+    return button, mcmc_algo, num_iterations
 
 
 @app.cell
@@ -114,16 +115,26 @@ def _(num_iterations):
 
 
 @app.cell
+def _(button):
+    button
+    return
+
+
+@app.cell
 def _(
+    button,
     carrying_capacity,
     data,
     growth_rate,
     mcmc_algo,
+    mo,
     model,
     num_iterations,
     pints,
     times,
 ):
+    mo.stop(not button.value)
+
     problem = pints.SingleOutputProblem(model, times, data)
     likelihood = pints.GaussianLogLikelihood(problem)
     prior = pints.UniformLogPrior([0, 0, 0], [100, 100, 100])
