@@ -177,10 +177,11 @@ def _(mo):
 
 @app.cell
 def _(chains, plt):
-    fig2 = plt.figure(figsize=(6, 3))
+    fig2 = plt.figure(figsize=(7, 3))
 
     num_params = 3
 
+    label = ['Growth Rate', 'Carrying Capacity', r'$\sigma$']
     for i in range(num_params):
         ax2 = fig2.add_subplot(1, num_params, 1 + i)
         ax2.plot(chains[0, :, i], label='Chain 1')
@@ -190,27 +191,31 @@ def _(chains, plt):
         if i == 0:
             ax2.legend()
 
+        ax2.set_ylabel(label[i])
+
     fig2.set_tight_layout(True)
 
     fig2
-    return ax2, fig2, i, num_params
+    return ax2, fig2, i, label, num_params
 
 
 @app.cell
 def _(chains, data, model, plt, times):
-    fig3 = plt.figure(figsize=(4, 4))
+    fig3 = plt.figure(figsize=(3.5, 3.5))
 
     ax3 = fig3.add_subplot(1, 1, 1)
 
-    for param in chains[0, :, :]:
-        ax3.plot(times, model.simulate(param[:2], times), alpha=0.1, color='tab:blue')
+    for j, param in enumerate(chains[0, :, :]):
+        ax3.plot(times, model.simulate(param[:2], times), alpha=0.5, color='tab:blue', label='Model Fits' if j == 0 else None)
 
-    ax3.plot(times, data, 'x-', color='k')
+    ax3.plot(times, data, 'x-', color='k', label='Data')
 
     ax3.set_xlabel('Time')
+    ax3.set_ylabel('Output')
+    ax3.legend()
 
     fig3
-    return ax3, fig3, param
+    return ax3, fig3, j, param
 
 
 if __name__ == "__main__":
