@@ -25,7 +25,7 @@ jobs:
 
             - name: Install dependencies
               run: |
-                sudo apt install python3.12-distutils
+                sudo apt install python3-distutils
                 python -m pip install --upgrade pip setuptools wheel
                 pip install --upgrade setuptools
                 python -m pip install marimo pints matplotlib numpy
