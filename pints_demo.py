@@ -9,7 +9,6 @@ def _():
     import marimo as mo
     import pints
     import pints.toy
-    import pints.plot
     import numpy as np
     import matplotlib.pyplot as plt
     return mo, np, pints, plt
@@ -162,17 +161,41 @@ def _(mo):
 
 
 @app.cell
-def _(chains, pints):
-    fig2, ax2 = pints.plot.trace(chains)
+def _(chains, plt):
+    fig2 = plt.figure(figsize=(6, 3))
+
+    num_params = 3
+
+    for i in range(num_params):
+        ax2 = fig2.add_subplot(1, num_params, 1 + i)
+        ax2.plot(chains[0, :, i], label='Chain 1')
+        ax2.plot(chains[1, :, i], label='Chain 2')
+        ax2.plot(chains[2, :, i], label='Chain 3')
+        ax2.set_xlabel('MCMC iteration')
+        if i == 0:
+            ax2.legend()
+
+    fig2.set_tight_layout(True)
+
     fig2
-    return ax2, fig2
+    return ax2, fig2, i, num_params
 
 
 @app.cell
-def _(chains, num_iterations, pints, problem):
-    fig3, ax3 = pints.plot.series(chains[0, num_iterations.value//2:, :], problem)
+def _(chains, data, model, plt, times):
+    fig3 = plt.figure(figsize=(4, 4))
+
+    ax3 = fig3.add_subplot(1, 1, 1)
+
+    for param in chains[0, :, :]:
+        ax3.plot(times, model.simulate(param[:2], times), alpha=0.1, color='tab:blue')
+
+    ax3.plot(times, data, 'x-', color='k')
+
+    ax3.set_xlabel('Time')
+
     fig3
-    return ax3, fig3
+    return ax3, fig3, param
 
 
 if __name__ == "__main__":
