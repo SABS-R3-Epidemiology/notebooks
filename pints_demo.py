@@ -96,7 +96,7 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mcmc_algo = mo.ui.dropdown(['Haario Bardenet ACMC', 'Population MCMC'], value='Haario Bardenet ACMC', label='Choose the MCMC method:')
+    mcmc_algo = mo.ui.dropdown(['Haario Bardenet ACMC', 'Dream MCMC'], value='Haario Bardenet ACMC', label='Choose the MCMC method:')
     num_iterations = mo.ui.number(2, 1000, label='Choose the number of iterations (Maximum of 1000): ', value=250)
     button = mo.ui.run_button(label='Run MCMC')
     return button, mcmc_algo, num_iterations
@@ -148,7 +148,7 @@ def _(
 
     methods = {
         'Haario Bardenet ACMC': pints.HaarioBardenetACMC,
-        'Population MCMC': pints.PopulationMCMC,
+        'Dream MCMC': pints.DreamMCMC,
     }
 
     mcmc = pints.MCMCController(
