@@ -1,0 +1,43 @@
+# https://docs.marimo.io/guides/publishing/github_pages/#publish-using-github-actions
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+
+            - name: Set up Python 3.9
+              uses: actions/setup-python@v2
+              with:
+                python-version: 3.9
+            - name: Install dependencies
+              run: |
+                python3 -m pip install --upgrade pip
+                python3 -m pip install marimo pints matplotlib numpy
+
+            - name: Export notebook
+              run: |
+                  marimo export html-wasm pints_demo.py -o output_dir --mode run --no-show-code
+
+            - name: Upload Pages Artifact
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: output_dir
+
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+
+        permissions:
+            pages: write
+            id-token: write
+
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
+              with:
+                  artifact_name: github-pages
