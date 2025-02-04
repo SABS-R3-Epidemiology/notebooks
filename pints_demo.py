@@ -28,7 +28,7 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    growth_rate = mo.ui.slider(0.1, 1.0, label='Select the true growth rate: ', step=0.1)
+    growth_rate = mo.ui.slider(0.1, 2.0, label='Select the true growth rate: ', step=0.1, value=0.5)
     carrying_capacity = mo.ui.slider(10, 50, label='Select the true carrying capacity: ')
     return carrying_capacity, growth_rate
 
@@ -137,7 +137,11 @@ def _(
 
     problem = pints.SingleOutputProblem(model, times, data)
     likelihood = pints.GaussianLogLikelihood(problem)
-    prior = pints.UniformLogPrior([0, 0, 0], [100, 100, 100])
+    prior = pints.ComposedLogPrior(
+        pints.GammaLogPrior(1, 0.1),
+        pints.GammaLogPrior(1, 0.1),
+        pints.GammaLogPrior(1, 0.1)
+    )
     posterior = pints.LogPosterior(likelihood, prior)
 
     x0 = [growth_rate.value, carrying_capacity.value, 1]
