@@ -69,9 +69,9 @@ def _(carrying_capacity, growth_rate, np, pints):
 
 @app.cell
 def _(data, plt, times):
-    fig = plt.figure(figsize=(3, 2))
+    fig = plt.figure(figsize=(3.5, 2))
     ax = fig.add_subplot(1, 1, 1)
-    ax.plot(times, data, 'o-', label='Data')
+    ax.plot(times, data, 'o-', label='Data', color='k')
     ax.set_xlabel('Time')
     ax.set_ylabel('Output')
     ax.legend()
@@ -201,14 +201,14 @@ def _(chains, plt):
 
 @app.cell
 def _(chains, data, model, plt, times):
-    fig3 = plt.figure(figsize=(3.5, 3.5))
+    fig3 = plt.figure(figsize=(3.5, 2))
 
     ax3 = fig3.add_subplot(1, 1, 1)
 
     for j, param in enumerate(chains[0, :, :]):
         ax3.plot(times, model.simulate(param[:2], times), alpha=0.5, color='tab:blue', label='Model Fits' if j == 0 else None)
 
-    ax3.plot(times, data, 'x-', color='k', label='Data')
+    ax3.plot(times, data, 'o-', color='k', label='Data')
 
     ax3.set_xlabel('Time')
     ax3.set_ylabel('Output')
