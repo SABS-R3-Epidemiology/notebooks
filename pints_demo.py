@@ -1,17 +1,18 @@
 import marimo
 
 __generated_with = "0.10.19"
-app = marimo.App()
+app = marimo.App(html_head_file="head.html")
 
 
 @app.cell
 def _():
+    import time
     import marimo as mo
     import pints
     import pints.toy
     import numpy as np
     import matplotlib.pyplot as plt
-    return mo, np, pints, plt
+    return mo, np, pints, plt, time
 
 
 @app.cell
@@ -216,6 +217,80 @@ def _(chains, data, model, plt, times):
 
     fig3
     return ax3, fig3, j, param
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""## Speed test of slower inference (HES1 Michaelis-Menten Model)""")
+    return
+
+
+@app.cell
+def _(mo):
+    button_slow = mo.ui.run_button(label='Run slower MCMC')
+    return (button_slow,)
+
+
+@app.cell
+def _(button_slow):
+    button_slow
+    return
+
+
+@app.cell
+def _(button_slow, mo, np, pints, time):
+    mo.stop(not button_slow.value)
+
+
+    times_slow = np.arange(101)
+    model_slow = pints.toy.Hes1Model()
+    true_params_lv = [1, 1, 1, 1,]
+    data_slow = model_slow.simulate(true_params_lv, times_slow)
+    data_slow += np.random.normal(0, 0.5, data_slow.shape)
+
+    t0 = time.time()
+
+    problem_slow = pints.SingleOutputProblem(model_slow, times_slow, data_slow)
+    likelihood_slow = pints.GaussianLogLikelihood(problem_slow)
+    prior_slow = pints.ComposedLogPrior(
+        pints.GammaLogPrior(1, 0.1),
+        pints.GammaLogPrior(1, 0.1),
+        pints.GammaLogPrior(1, 0.1),
+        pints.GammaLogPrior(1, 0.1),
+        pints.GammaLogPrior(1, 0.1),
+    )
+    posterior_slow = pints.LogPosterior(likelihood_slow, prior_slow)
+
+    mcmc_slow = pints.MCMCController(
+        posterior_slow,
+        1,
+        [[1, 1, 1, 1, 1,]],
+        method=pints.HamiltonianMCMC
+    )
+    mcmc_slow.set_max_iterations(30)
+
+    _ = mcmc_slow.run()
+
+    t1 = time.time()
+    return (
+        data_slow,
+        likelihood_slow,
+        mcmc_slow,
+        model_slow,
+        posterior_slow,
+        prior_slow,
+        problem_slow,
+        t0,
+        t1,
+        times_slow,
+        true_params_lv,
+    )
+
+
+@app.cell
+def _(t0, t1):
+    '{} Seconds'.format(t1 - t0)
+    return
 
 
 if __name__ == "__main__":
